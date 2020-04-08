@@ -1,0 +1,8 @@
+[flake8]
+ignore = E203, W503, W504
+max-line-length = 88
+exclude = .git, __pycache__, build, dist, .eggs
+
+[flake8:local-plugins]
+extension =
+    LOL1 = commonplace.flake8_typing:MonkeyPatchPyFlakesChecker
