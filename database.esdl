@@ -32,7 +32,7 @@ module commonplace {
     }
 
     abstract type Titled {
-        # Describes an optional non-unique human-readable title. 
+        # Describes an optional non-unique human-readable title.
         property title -> str;
     }
 
@@ -57,13 +57,13 @@ module commonplace {
     ### custom scalars
 
     scalar type Slug extending str {
-        constraint regexp(r'[a-z][.a-z0-9-]+');
+        constraint regexp(r'[a-z0-9][.a-z0-9-]+');
     }
 
     scalar type SHA1 extending bytes {
         constraint min_bytes_len(20);
         constraint max_bytes_len(20);
-    } 
+    }
 
     ### custom constraints
     abstract constraint max_bytes_len(max: int64) on (len(<std::bytes>__subject__)) extending max_value {
