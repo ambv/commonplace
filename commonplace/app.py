@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import *
 
+import logging
 from pathlib import Path
 
 import edgedb
@@ -26,19 +27,24 @@ db_db = config("EDGEDB_DB", default="commonplace")
 db_dsn = URL(f"edgedb://{db_user}:{db_password}@{db_host}/{db_db}")
 db_pool: edgedb.AsyncIOPool
 templates = Jinja2Templates(directory=str(current_dir / "templates"))
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG if debug else logging.INFO)
 
 
+app = Starlette(debug=debug)
+app.mount("/static", StaticFiles(directory=str(current_dir / "static")), name="static")
+
+
+@app.on_event("startup")
 async def startup() -> None:
     global db_pool
-    db_pool = await edgedb.create_async_pool(dsn=str(db_dsn), min_size=4, max_size=16)
+    logger.info("Creating an async connection pool to EdgeDB")
+    db_pool = await edgedb.create_async_pool(dsn=str(db_dsn), min_size=1, max_size=16)
 
 
+@app.on_event("shutdown")
 async def shutdown() -> None:
     await db_pool.aclose()
-
-
-app = Starlette(debug=debug, on_startup=[startup], on_shutdown=[shutdown])
-app.mount("/static", StaticFiles(directory=str(current_dir / "static")), name="static")
 
 
 @app.route("/")
