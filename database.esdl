@@ -45,6 +45,7 @@ module commonplace {
     }
 
     abstract type HasTags {
+        # Should be an array of Tags but this does not work yet.
         property tags -> array<str>;
     }
 
@@ -57,7 +58,11 @@ module commonplace {
     ### custom scalars
 
     scalar type Slug extending str {
-        constraint regexp(r'[a-z0-9][.a-z0-9-]+');
+        constraint regexp(r'^[a-z0-9][.a-z0-9-]+$');
+    }
+
+    scalar type Tag extending str {
+        constraint regexp(r'^[a-zA-Z0-9][a-zA-Z0-9./-]+$')
     }
 
     scalar type SHA1 extending bytes {
