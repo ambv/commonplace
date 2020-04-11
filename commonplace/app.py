@@ -102,28 +102,25 @@ if db_db == "cptest":
     async def update_schema(request: Request) -> StreamingResponse:
         from commonplace import db_bootstrap
 
-        async with db_pool.acquire() as db:
-            return StreamingResponse(
-                db_bootstrap.update_schema(db), media_type="text/plain"
-            )
+        return StreamingResponse(
+            db_bootstrap.update_schema(pool=db_pool), media_type="text/plain"
+        )
 
     @app.route("/drop-test-data")
     async def drop_test_data(request: Request) -> StreamingResponse:
         from commonplace import db_bootstrap
 
-        async with db_pool.acquire() as db:
-            return StreamingResponse(
-                db_bootstrap.drop_test_data(db), media_type="text/plain"
-            )
+        return StreamingResponse(
+            db_bootstrap.drop_test_data(pool=db_pool), media_type="text/plain"
+        )
 
     @app.route("/make-test-data")
     async def make_test_data(request: Request) -> StreamingResponse:
         from commonplace import db_bootstrap
 
-        async with db_pool.acquire() as db:
-            return StreamingResponse(
-                db_bootstrap.make_test_data(db), media_type="text/plain"
-            )
+        return StreamingResponse(
+            db_bootstrap.make_test_data(pool=db_pool), media_type="text/plain"
+        )
 
 
 if __name__ == "__main__":
