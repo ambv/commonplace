@@ -14,7 +14,8 @@ from starlette.responses import Response, RedirectResponse, StreamingResponse
 from starlette.staticfiles import StaticFiles
 from starlette.templating import Jinja2Templates
 
-from commonplace.convenience import find_dot_env
+from commonplace import queries
+from commonplace.convenience import find_dot_env, get_english_dt_description_from_now
 
 current_dir = Path(__file__).parent
 config = Config(find_dot_env(current_dir))
@@ -50,7 +51,8 @@ async def shutdown() -> None:
 @app.route("/")
 async def homepage(request: Request) -> Response:
     async with db_pool.acquire() as db:
-        await db.execute("select 1;")
+        tags = await queries.get_all_tags(db)
+        content = await queries.get_all_content(db)
 
     return templates.TemplateResponse(
         name="index.html",
@@ -58,6 +60,9 @@ async def homepage(request: Request) -> Response:
             "request": request,
             "title": "Łukasz Langa",
             "domain": "lukasz.langa.pl",
+            "tags": tags,
+            "content": content,
+            "humanize_dt": get_english_dt_description_from_now,
             "numbers": range(100),
         },
     )

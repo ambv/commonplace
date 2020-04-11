@@ -1,2 +1,78 @@
 <!doctype html>
-<h1>Hello world</h1>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8" />
+    <meta property="og:title" content="{{ title }}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://{{ domain }}/logo-large.jpg" />
+    <meta property="og:url" content="https://{{ domain }}/" />
+    <meta property="og:site_name" content="{{ domain }}" />
+    <meta property="fb:admins" content="lukasz.langa">
+    <meta name="google-site-verification" content="m8vwZ4Olrv8gnauNXBjFcW7nVwa3FtHNo-jgFDrcnH4" />
+    <meta property="article:author" content="lukasz.langa">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="canonical" href="http://lukasz.langa.pl/" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v2.1.5/css/unicons.css">
+    <link rel="stylesheet" href="/static/style.css" />
+
+    <title>{{ title }}</title>
+  </head>
+  <body>
+    <header class="navbar navbar-expand navbar-dark flex-column flex-md-row topbar bg-primary">
+      <a class="navbar-brand mr-10" href="#">
+        <img src="/static/langa-lukasz-2020-60x60.png" width="30" height="30" class="d-inline-block align-top rounded mr-1" alt="">
+        {{ title }}
+      </a>
+
+      <div class="navbar-nav-scroll ml-md-auto">
+        <ul class="navbar-nav bd-navbar-nav flex-row">
+          <li class="nav-item">
+            <a class="nav-link active" href="/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link " href="/">Privacy Policy</a>
+          </li>
+        </ul>
+      </div>
+    </header>
+    <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-3 sidebar pl-0">
+        <nav class="navbar navbar-light bg-light tagsnav">
+          <nav class="nav nav-pills flex-column">
+            {% for tag in tags %}
+            <a class="nav-link {{ loop.cycle('', '', 'active', '', 'disabled', '', '', 'disabled') }}" href="#item-1"><i class="uil uil-{{ loop.cycle('snow-flake', 'angry', 'adjust-circle', 'align-left-justify', 'book-alt', 'music', 'database') }}"></i> {{ tag }}</a>
+            {% endfor %}
+          </nav>
+        </nav>
+      </div>
+      <div class="col-md-9 pl-0">
+        {% for item in content %}
+        <div class="card shadow-sm" style="margin-top: 1em;">
+          <div class="card-body">
+            {% if item.title %}
+            <h5 class="card-title">{{ item.title }}</h5>
+            {% endif %}
+            <p class="card-text">{{ item.text }}</p>
+            <p class="small mt-2 mb-0">
+            <a href="#" class="text-muted" title="{{ item.ts }}"><time datetime="{{ item.ts }}">{{ humanize_dt(item.ts) }}</time></a>
+            {% for tag in item.tags | sort %}
+            {% if loop.first %}
+            <span> · </span>
+            {% endif %}
+            <a href="#">#{{ tag }}</a>
+            {% endfor %}
+            </p>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </body>
+  </html>
