@@ -56,8 +56,9 @@ async def shutdown() -> None:
 async def homepage(request: Request) -> Response:
     query_tags: FrozenSet[str] = frozenset(request.query_params.getlist("t"))
     async with db_pool.acquire() as db:
-        tags = await queries.get_all_tags(db)
         content = await queries.get_all_content(db, query_tags)
+        available_tags = {tag for o in content for tag in o.tags}
+        tags = await queries.get_all_tags(db, available_tags)
 
     return templates.TemplateResponse(
         name="index.html",
@@ -68,6 +69,7 @@ async def homepage(request: Request) -> Response:
             "tags": tags,
             "query_tags": query_tags,
             "content": content,
+            "make_tags_query": make_tags_query,
             "humanize_dt": get_english_dt_description_from_now,
             "icon_class": icon_class,
         },
@@ -105,6 +107,20 @@ async def server_error(request: Request, exc: Exception) -> Response:
     return templates.TemplateResponse(
         name="500.html", context={"request": request, "exception": exc}, status_code=500
     )
+
+
+def make_tags_query(needle: str, haystack: AbstractSet[str]) -> str:
+    """Return a URL query string for tags.
+
+    `haystack` is the previous set of tags. If `needle` was in it, remove it.
+    If not, add it.
+    """
+    new_tags = set(haystack)
+    if needle in haystack:
+        new_tags.remove(needle)
+    else:
+        new_tags.add(needle)
+    return "&".join(f"t={tag}" for tag in new_tags)
 
 
 if db_db == "cptest":

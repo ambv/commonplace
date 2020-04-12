@@ -15,16 +15,23 @@ class ContentItem(Protocol):
     name: str
     title: Optional[str]
     text: str
+    tags: List[str]
 
 
-async def get_all_tags(db: edgedb.AsyncIOConnection) -> List[str]:
+async def get_all_tags(
+    db: edgedb.AsyncIOConnection, seen: AbstractSet[str]
+) -> List[Tuple[str, bool]]:
+    """Return a sorted list of 2-tuples like: ("tag name", bool("tag name" in seen))."""
+
     tags = await db.fetchall("SELECT DISTINCT commonplace::Content.tags;")
-    return sorted(tags)
+    return sorted((tag, tag in seen) for tag in tags)
 
 
 async def get_all_content(
     db: edgedb.AsyncIOConnection, tags: AbstractSet[str] = frozenset()
 ) -> List[ContentItem]:
+    """Return a sorted list of ContentItem-like objects that contain `tags`."""
+
     base_query = """
         WITH MODULE commonplace
         SELECT Content {
@@ -41,8 +48,7 @@ async def get_all_content(
     elif len(tags) == 1:
         taglist = list(tags)
         content = await db.fetchall(
-            base_query + "FILTER <Tag>$t0 IN .tags;",
-            t0=taglist[0],
+            base_query + "FILTER <Tag>$t0 IN .tags;", t0=taglist[0],
         )
     elif len(tags) == 2:
         taglist = list(tags)
