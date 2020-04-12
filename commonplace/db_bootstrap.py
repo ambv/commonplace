@@ -218,13 +218,13 @@ async def make_test_data(
             public_toss = random.random()
             public_since: Optional[datetime.datetime]
             public_until: Optional[datetime.datetime]
-            if public_toss < 0.2:
+            if public_toss < 0.25:
                 public_since = nowtz() - datetime.timedelta(seconds=seconds)
                 public_until = nowtz()
-            elif public_toss < 0.4:
+            elif public_toss < 0.5:
                 public_since = nowtz() + datetime.timedelta(seconds=seconds)
                 public_until = None
-            elif public_toss > 0.5:
+            elif public_toss >= 0.5:
                 public_since = None
                 public_until = None
 
