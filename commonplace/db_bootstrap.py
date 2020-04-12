@@ -244,7 +244,7 @@ async def make_test_data(
                     ),
                     title := <str>$title,
                     name := <Slug>$name,
-                    tags := <array<Tag>>$tags,
+                    tags := array_unpack(<array<Tag>>$tags),
                     public_since := <datetime>$public_since,
                     public_until := <datetime>$public_until,
                     deleted := <bool>$deleted

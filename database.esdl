@@ -45,8 +45,7 @@ module commonplace {
     }
 
     abstract type HasTags {
-        # Should be an array of Tags but this does not work yet.
-        property tags -> array<str>;
+        multi property tags -> Tag;
     }
 
     abstract type Publishable {

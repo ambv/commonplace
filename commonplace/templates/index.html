@@ -47,7 +47,7 @@
         <nav class="navbar navbar-light bg-light tagsnav">
           <nav class="nav nav-pills flex-column">
             {% for tag in tags %}
-            <a class="nav-link {{ loop.cycle('', '', 'active', '', 'disabled', '', '', 'disabled') }}" href="#item-1"><i class="uil uil-{{ loop.cycle('snow-flake', 'angry', 'adjust-circle', 'align-left-justify', 'book-alt', 'music', 'database') }}"></i> {{ tag }}</a>
+            <a class="nav-link {% if tag in query_tags %}active{% else %}{% endif %}" href="/?t={{ tag }}"><i class="uil {{ icon_class(tag) }}"></i> {{ tag }}</a>
             {% endfor %}
           </nav>
         </nav>
