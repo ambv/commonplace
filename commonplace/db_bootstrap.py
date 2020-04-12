@@ -145,10 +145,16 @@ async def drop_test_data(
             AND .is_abstract = false;
             """
         )
-        for typeobj in typenames:
-            typename = typeobj.name
-            yield f"Deleting {typename} objects\n"
-            await conn.execute(f"DELETE {typename}")
+        retry = True
+        while retry:
+            retry = False
+            for typeobj in typenames:
+                typename = typeobj.name
+                yield f"Deleting {typename} objects\n"
+                try:
+                    await conn.execute(f"DELETE {typename}")
+                except edgedb.ConstraintViolationError:
+                    retry = True
 
     yield "Done dropping test data\n"
 
