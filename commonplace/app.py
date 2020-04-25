@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import *
 
+import asyncio
 import logging
 from pathlib import Path
 
@@ -55,10 +56,12 @@ async def shutdown() -> None:
 @app.route("/")
 async def homepage(request: Request) -> Response:
     query_tags: FrozenSet[str] = frozenset(request.query_params.getlist("t"))
-    async with db_pool.acquire() as db:
-        content = await queries.get_all_content(db, query_tags)
-        available_tags = {tag for o in content for tag in o.tags}
-        tags = await queries.get_all_tags(db, available_tags)
+    content, all_tags = await asyncio.gather(
+        queries.get_all_content(db_pool, query_tags),
+        queries.get_all_tags(db_pool),
+    )
+    available_tags = {tag for o in content for tag in o.tags}
+    tags = sorted((tag, tag in available_tags) for tag in all_tags)
 
     return templates.TemplateResponse(
         name="index.html",
