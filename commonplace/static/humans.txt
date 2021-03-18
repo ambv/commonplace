@@ -1,0 +1,13 @@
+# -*- coding: utf8 -*-
+
+/* TEAM */
+  Author: Łukasz Langa
+  Contact: lukasz@langa.pl
+  Twitter: @llanga
+  Location: Poznań, Poland
+
+/* SITE */
+  Human Language: English
+  Programming Language: Python 3.9
+  Building blocks: AsyncIO, Starlette, EdgeDB
+  IDE: Visual Studio Code

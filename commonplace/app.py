@@ -4,12 +4,19 @@ from pathlib import Path
 
 from starlette.applications import Starlette
 from starlette.requests import Request
-from starlette.responses import Response
+from starlette.responses import Response, RedirectResponse
+from starlette.staticfiles import StaticFiles
 from starlette.templating import Jinja2Templates
 
-app = Starlette(debug=True)
 current_dir = Path(__file__).parent
 templates = Jinja2Templates(directory=str(current_dir / "templates"))
+app = Starlette(debug=True)
+app.mount("/static", StaticFiles(directory=str(current_dir / "static")), name="static")
+
+
+@app.route("/favicon.ico")
+async def favicon(request: Request) -> Response:
+    return RedirectResponse(url="/static/favicon32.png")
 
 
 @app.route("/error")

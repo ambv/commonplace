@@ -1,0 +1,24 @@
+body {
+    background-color: #e8f3ff;
+}
+
+.topbar {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    min-height: 4rem;
+    z-index: 100;
+}
+
+.sidebar {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 4rem;
+    height: calc(100vh - 4rem);
+}
+
+.tagsnav {
+    display: block !important;
+    max-height: calc(100vh - 4rem);
+    overflow-y: auto;
+}
