@@ -3,14 +3,17 @@ from __future__ import annotations
 from pathlib import Path
 
 from starlette.applications import Starlette
+from starlette.config import Config
 from starlette.requests import Request
 from starlette.responses import Response, RedirectResponse
 from starlette.staticfiles import StaticFiles
 from starlette.templating import Jinja2Templates
 
 current_dir = Path(__file__).parent
+config = Config(current_dir / ".env")
+debug = config("COMMONPLACE_DEBUG", cast=bool, default=False)
 templates = Jinja2Templates(directory=str(current_dir / "templates"))
-app = Starlette(debug=True)
+app = Starlette(debug=debug)
 app.mount("/static", StaticFiles(directory=str(current_dir / "static")), name="static")
 
 
