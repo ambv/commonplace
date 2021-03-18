@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block body %}
+  <div class="row">
+    <div class="col-md-3 sidebar pl-0">
+      <nav class="navbar navbar-light bg-light tagsnav">
+        <nav class="nav nav-pills flex-column">
+          {% for tag, available in tags %}
+          <a class="nav-link {% if tag in query_tags %}active{% else %}{% if not available %}disabled{% endif %}{% endif %}" href="/?{{ make_tags_query(tag, query_tags) }}"><i class="uil {{ icon_class(tag) }}"></i> {{ tag }}</a>
+          {% endfor %}
+        </nav>
+      </nav>
+    </div>
+    <div class="col-md-9 pl-0">
+      {% for item in content %}
+      <div class="card shadow-sm" style="margin-top: 1em;">
+        <div class="card-body">
+          {% if item.title %}
+          <h5 class="card-title">{{ item.title }}</h5>
+          {% endif %}
+          <p class="card-text">{{ item.text }}</p>
+          <p class="small mt-2 mb-0">
+          <a href="/{{ item.name }}" class="text-muted" title="{{ item.ts }}"><time datetime="{{ item.ts }}">{{ humanize_dt(item.ts) }}</time></a>
+          {% for tag in item.tags | sort %}
+          {% if loop.first %}
+          <span> · </span>
+          {% endif %}
+          <a href="/?t={{ tag }}">#{{ tag }}</a>
+          {% endfor %}
+          </p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}

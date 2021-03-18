@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8" />
+    <meta property="og:title" content="{{ title }}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://{{ domain }}/logo-large.jpg" />
+    <meta property="og:url" content="https://{{ domain }}/" />
+    <meta property="og:site_name" content="{{ domain }}" />
+    <meta property="fb:admins" content="lukasz.langa">
+    <meta name="google-site-verification" content="m8vwZ4Olrv8gnauNXBjFcW7nVwa3FtHNo-jgFDrcnH4" />
+    <meta property="article:author" content="lukasz.langa">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="canonical" href="https://{{ domain }}/" />
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v2.1.5/css/unicons.css">
+    <link rel="stylesheet" href="/static/style.css" />
+
+    <title>{{ title }}</title>
+  </head>
+  <body>
+    <header class="navbar navbar-expand navbar-dark flex-column flex-md-row topbar bg-primary">
+      <a class="navbar-brand mr-10" href="/">
+        <img src="/static/langa-lukasz-2020-60x60.png" width="30" height="30" class="d-inline-block align-top rounded mr-1" alt="">
+        {{ title }}
+      </a>
+
+      <div class="navbar-nav-scroll ml-md-auto">
+        <ul class="navbar-nav bd-navbar-nav flex-row">
+          <li class="nav-item">
+              <a class="nav-link active" href="/">Home</a>
+          </li>
+          <li class="nav-item">
+              <a class="nav-link" href="/about">About</a>
+          </li>
+          <li class="nav-item">
+              <a class="nav-link " href="/privacy-policy">Privacy Policy</a>
+          </li>
+        </ul>
+      </div>
+    </header>
+    <div class="container-fluid">
+{% block body %}
+{% endblock %}
+    </div>
+  </body>
+</html>
