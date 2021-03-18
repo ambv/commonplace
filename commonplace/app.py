@@ -8,9 +8,11 @@ import logging
 from starlette.applications import Starlette
 from starlette.config import Config
 from starlette.requests import Request
-from starlette.responses import Response, RedirectResponse
+from starlette.responses import Response, RedirectResponse, StreamingResponse
 from starlette.staticfiles import StaticFiles
 from starlette.templating import Jinja2Templates
+
+from . import convenience
 
 current_dir = Path(__file__).parent
 config = Config(current_dir / ".env")
@@ -63,3 +65,18 @@ async def internal_server_error(request: Request, exc: Exception) -> Response:
         context={"request": request, "domain": "lukasz.langa.pl", "title": "500!"},
         status_code=500,
     )
+
+
+if debug:
+
+    @app.route("/drop-data")
+    async def drop_test_data(request: Request) -> StreamingResponse:
+        return StreamingResponse(
+            convenience.drop_test_data(db_pool), media_type="text/plain"
+        )
+
+    @app.route("/make-data")
+    async def make_test_data(request: Request) -> StreamingResponse:
+        return StreamingResponse(
+            convenience.make_test_data(db_pool), media_type="text/plain"
+        )
