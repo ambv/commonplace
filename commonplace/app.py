@@ -31,12 +31,41 @@ async def startup() -> None:
     global db_pool
     db_pool = await edgedb.create_async_pool(db_instance, min_size=1, max_size=16)
     logger.info("Created the connection pool to EdgeDB")
+    templates.env.globals.update(
+        {
+            "domain": "lukasz.langa.pl",
+            "make_tags_query": convenience.make_tags_query,
+            "humanize_dt": convenience.get_english_dt_description_from_now,
+            "icon_class": convenience.icon_class,
+        }
+    )
 
 
 @app.on_event("shutdown")
 async def shutdown() -> None:
     await db_pool.aclose()
     logger.info("Closed the connection pool to EdgeDB")
+
+
+@app.route("/")
+async def homepage(request: Request) -> Response:
+    query_tags = frozenset(request.query_params.getlist("t"))
+
+    content = await convenience.query_content(db_pool, query_tags)
+    tags = await db_pool.query("SELECT DISTINCT commonplace::Content.tags;")
+    available_tags = {tag for item in content for tag in item.tags}
+    tags_with_availability = ((tag, tag in available_tags) for tag in tags)
+
+    return templates.TemplateResponse(
+        name="index.html",
+        context={
+            "request": request,
+            "title": "Łukasz Langa",
+            "content": content,
+            "tags": tags_with_availability,
+            "query_tags": query_tags,
+        },
+    )
 
 
 @app.route("/favicon.ico")
@@ -53,7 +82,7 @@ async def error(request: Request) -> Response:
 async def not_found(request: Request, exc: Exception) -> Response:
     return templates.TemplateResponse(
         name="404.html",
-        context={"request": request, "domain": "lukasz.langa.pl", "title": "404!"},
+        context={"request": request, "title": "404!"},
         status_code=404,
     )
 
@@ -62,7 +91,7 @@ async def not_found(request: Request, exc: Exception) -> Response:
 async def internal_server_error(request: Request, exc: Exception) -> Response:
     return templates.TemplateResponse(
         name="500.html",
-        context={"request": request, "domain": "lukasz.langa.pl", "title": "500!"},
+        context={"request": request, "title": "500!"},
         status_code=500,
     )
 

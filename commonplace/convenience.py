@@ -3,7 +3,7 @@ from __future__ import annotations
 import datetime
 import random
 import string
-from typing import AsyncGenerator, Iterator
+from typing import AbstractSet, AsyncGenerator, Iterator, Protocol, Sequence
 
 import dateutil.tz
 import edgedb
@@ -74,6 +74,50 @@ def icon_class(tag: str) -> str:
     return "uil-" + (cls or "angle-right")
 
 
+def make_tags_query(needle: str, haystack: AbstractSet[str]) -> str:
+    """Return a URL query string for tags.
+
+    `haystack` is the previous set of tags. If `needle` was in it, remove it.
+    If not, add it.
+    """
+    new_tags = set(haystack)
+    if needle in haystack:
+        new_tags.remove(needle)
+    else:
+        new_tags.add(needle)
+    return "&".join(f"t={tag}" for tag in new_tags)
+
+
+class ContentItem(Protocol):
+    ts: datetime.datetime
+    name: str
+    title: str | None
+    text: str
+    tags: list[str]
+
+
+async def query_content(
+    db: edgedb.AsyncIOPool, tags: AbstractSet[str] = frozenset()
+) -> Sequence[ContentItem]:
+    query = """
+        WITH MODULE commonplace
+        SELECT Content {
+            ts := .public_since ?? datetime_current(),
+            name,
+            title,
+            text := [IS Note].text,
+            tags
+        }
+    """
+    ordering = " ORDER BY .ts DESC; "
+    if tags:
+        filtering = " FILTER all(array_unpack(<array<util::Tag>>$tags) IN .tags) "
+        content = await db.query(query + filtering + ordering, tags=list(tags))
+    else:
+        content = await db.query(query + ordering)
+    return content
+
+
 async def drop_test_data(db: edgedb.AsyncIOPool) -> AsyncGenerator[str, None]:
     yield "Dropping all data from database\n"
     typenames = await db.query(
@@ -127,7 +171,7 @@ async def make_test_data(db: edgedb.AsyncIOPool) -> AsyncGenerator[str, None]:
         except edgedb.ExecutionError as ee:
             yield f"ERROR: {str(ee)}\n"
 
-    content_count = 100
+    content_count = 40
     for i in range(1, content_count + 1):
         yield f"{i}/{content_count}: inserting note\n"
         text = " ".join(lorem_ipsum(random.randint(3, 20)))
@@ -167,7 +211,7 @@ async def make_test_data(db: edgedb.AsyncIOPool) -> AsyncGenerator[str, None]:
                 title=content_title,
                 name=content_name,
                 text=text,
-                tags=random.sample(tags, random.randint(0, len(tags))),
+                tags=random.sample(tags, random.randint(0, 3)),
                 public_since=public_since,
                 public_until=public_until,
                 deleted=False if random.random() > 0.1 else True,
