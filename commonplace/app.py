@@ -10,3 +10,8 @@ app = Starlette(debug=True)
 @app.route("/error")
 async def error(request: Request) -> Response:
     raise RuntimeError("Oh no")
+
+
+@app.exception_handler(404)
+async def not_found(request: Request, exc: Exception) -> Response:
+    return Response(b"not found")
