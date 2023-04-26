@@ -97,7 +97,7 @@ class ContentItem(Protocol):
 
 
 async def query_content(
-    db: edgedb.AsyncIOPool, tags: AbstractSet[str] = frozenset()
+    db: edgedb.AsyncIOClient, tags: AbstractSet[str] = frozenset()
 ) -> Sequence[ContentItem]:
     query = """
         WITH MODULE commonplace
@@ -118,7 +118,7 @@ async def query_content(
     return content
 
 
-async def drop_test_data(db: edgedb.AsyncIOPool) -> AsyncGenerator[str, None]:
+async def drop_test_data(db: edgedb.AsyncIOClient) -> AsyncGenerator[str, None]:
     yield "Dropping all data from database\n"
     typenames = await db.query(
         """
@@ -141,7 +141,7 @@ async def drop_test_data(db: edgedb.AsyncIOPool) -> AsyncGenerator[str, None]:
     yield "Done dropping test data\n"
 
 
-async def make_test_data(db: edgedb.AsyncIOPool) -> AsyncGenerator[str, None]:
+async def make_test_data(db: edgedb.AsyncIOClient) -> AsyncGenerator[str, None]:
     yield "Populating test data\n"
     usernames = ["ambv", "yury", "elprans"]
     tags = [
