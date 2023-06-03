@@ -1,14 +1,13 @@
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 
 import edgedb
-import logging
-
 from starlette.applications import Starlette
 from starlette.config import Config
 from starlette.requests import Request
-from starlette.responses import Response, RedirectResponse, StreamingResponse
+from starlette.responses import RedirectResponse, Response, StreamingResponse
 from starlette.staticfiles import StaticFiles
 from starlette.templating import Jinja2Templates
 
@@ -18,7 +17,7 @@ current_dir = Path(__file__).parent
 config = Config(current_dir / ".env")
 debug = config("COMMONPLACE_DEBUG", cast=bool, default=False)
 db_instance = config("COMMONPLACE_DB", default="commonplace")
-db_pool: edgedb.AsyncIOPool
+db_pool: edgedb.AsyncIOClient
 templates = Jinja2Templates(directory=str(current_dir / "templates"))
 app = Starlette(debug=debug)
 app.mount("/static", StaticFiles(directory=str(current_dir / "static")), name="static")
@@ -29,7 +28,8 @@ logger.setLevel(logging.DEBUG if debug else logging.INFO)
 @app.on_event("startup")
 async def startup() -> None:
     global db_pool
-    db_pool = await edgedb.create_async_pool(db_instance, min_size=1, max_size=16)
+    db_pool = edgedb.create_async_client(db_instance, max_concurrency=16)
+    await db_pool.ensure_connected()
     logger.info("Created the connection pool to EdgeDB")
     templates.env.globals.update(
         {
