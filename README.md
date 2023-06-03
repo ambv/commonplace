@@ -40,7 +40,7 @@ To populate some canned data, visit the `/make-data` endpoint ([http://127.0.0.1
 
 ## Linting
 
-This project uses [Black], [MyPy] and [Ruff].
+This project uses [Black], [MyPy] and [Flake8].
 
 ### Black
 
@@ -54,14 +54,14 @@ black commonplace/ tests/
 mypy commonplace/ tests/
 ```
 
-### Ruff
+### Flake8
 
 ```shell
-ruff --fix commonplace/ tests/
+flake8 commonplace/ tests/
 ```
 
 [EdgeDB]: https://www.edgedb.com/
 [Black]: https://black.readthedocs.io/en/stable/
-[Ruff]: https://beta.ruff.rs/docs/
+[Flake8]: https://flake8.pycqa.org/en/latest/
 [MyPy]: https://mypy-lang.org/
 [Poetry]: https://python-poetry.org/
